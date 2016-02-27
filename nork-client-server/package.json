@@ -1,0 +1,19 @@
+{
+  "name": "nork-client-server",
+  "version": "1.0.0",
+  "description": "Creating a game inspired by Zork using the client-server architecture",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimmybnguyen/arch-nork.git"
+  },
+  "author": "Jimmy B. Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimmybnguyen/arch-nork/issues"
+  },
+  "homepage": "https://github.com/jimmybnguyen/arch-nork#readme"
+}

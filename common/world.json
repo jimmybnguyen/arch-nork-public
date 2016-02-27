@@ -21,8 +21,8 @@
       "description":"It is dark, you might be eaten by a grue.",
       "exits": {
         "north": {"id":"eaten_dark"},
-        "east": {"id:":"eaten_dark"},
-        "west": {"id:":"eaten_dark"},
+        "east": {"id":"eaten_dark"},
+        "west": {"id":"eaten_dark"},
         "south": {"id":"entrance"}
       },
       "uses": [{
