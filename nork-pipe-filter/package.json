@@ -1,0 +1,20 @@
+{
+  "name": "nork-pipe-filter",
+  "version": "1.0.0",
+  "description": "A game inspired by Zork using the pipe-and-filter architecture",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimmybnguyen/arch-nork.git"
+  },
+  "author": "Jimmy B. Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimmybnguyen/arch-nork/issues"
+  },
+  "homepage": "https://github.com/jimmybnguyen/arch-nork#readme"
+}
