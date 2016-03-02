@@ -7,6 +7,7 @@ var util = require('util');
 
 var currentRoom = world.rooms[0];
 var inventory = [];
+var gameOver = false;
 
 /*
 var rl = readLine.createInterface({
@@ -18,79 +19,88 @@ function start() {
     console.log(currentRoom.description);
     //getAnswer();
 }
-start();
-
-var testFilter = new stream.Transform({
-  objectMode: true,   //include any existing constructor options
-
-  transform (chunk, encoding, done) { // This is the _transform method
-    var data = chunk.toString(); //read in data
-    console.log(currentRoom.description);
-    var transformed = data.toUpperCase(); //process data
-
-    this.push(transformed); //pipe out data
-    done(); //callback for when finished
-  },
-
-  flush(done) { // This is the _flush method
-    //any final processing occurs here
-    done();
-  }
-});
 
 var inputFilter = new stream.Transform({
   transform (chunk, encoding, done) { // This is the _transform method
-      var answer = chunk.toString().toUpperCase();
+      var answer = chunk.toString().toUpperCase().trim();
 
-    /*
-    var input = chunk.toString().toUpperCase().split(" ");
-    var info;
-    if (input[0] == 'GO') {
-        
-    } else if (input[0] == 'TAKE') {
-        
-    } else if (input[0] == 'USE') {
-        
-    } else if (input[0] == 'INVENTORY') {
-        
-    } else {
-     // error invalid command    
-    }*/
-
-    this.push(answer); //pipe out data
-    done(); //callback for when finished
+      this.push(answer); //pipe out data
+      done(); //callback for when finished
   },
 
   flush(done) { // This is the _flush method
     //any final processing occurs here
     done();
   }
+    
 });
 
 
 var gameFilter = new stream.Transform({
     transform (chunk, encoding, done) {
-        var answer = chunk.toString();
-        console.log(answer);
-        if (answer.substring(0,2).toUpperCase() == 'GO') {
-            // Stores the direction of movement
-            info = answer.substring(3).toLowerCase();
+        var output = chunk.toString();
+        var info;
+        if (output.substring(0,2).toUpperCase() == 'GO') {
+            //stores the direction of movement
+            info = output.substring(3).toLowerCase();
             //move(direction);
-        } else if (answer.toUpperCase() == 'INVENTORY') {
-           // console.log(printInventory(inventory));    
-        } else if (answer.toUpperCase() == 'TAKE') {
-            //take(currentRoom);
-        } else if (answer.toUpperCase() == 'USE') {
-
-        } else {   
+        } else if (output.toUpperCase() == 'INVENTORY') {
+           output = printInventory(inventory);
+        } else if (output.toUpperCase() == 'TAKE') {
+            
+        } else if (output.toUpperCase() == 'USE') {
+            //stores the item to be used 
+            info = output.substring(4).toLowerCase();
+        } else {  
+            output = "INVALID COMMAND";
         }
-    }
+        
+        this.push(output); //pipe out data
+        done(); //callback for when finished
+      },
+
+      flush(done) { // This is the _flush method
+        //any final processing occurs here
+        done();
+      }
     
 });
 
 var outputFilter = new stream.Transform({
+    transform (chunk, encoding, done) {
+        var output = chunk.toString();
+        //console.log(output);
+        this.push(output + "\n"); //pipe out data
+        done(); //callback for when finished
+        if (gameOver) {
+            process.exit();
+        }   
+      },
+    
+      flush(done) { // This is the _flush method
+        //any final processing occurs here
+        done();
+      }
+    
 
 });
+
+function printInventory(inventory) {
+    return '\n' + '**********INVENTORY********** \n' + 
+        inventory.toString() + '\n' + '*****************************';
+}
+
+function take(room, item) {
+    if (currentRoom.items != null) {
+        inventory.push(currentRoom.items);  
+        console.log('Items added to inventory: ' + currentRoom.items);
+        
+        // Remove items from the room
+        currentRoom.items = null;
+    } else {
+        console.log('There is nothing in this room to take.');    
+    }
+}
 
 /*
 process.stdin
@@ -112,5 +122,8 @@ process.stdin
     process.exit();
   }
   */
-
-process.stdin.pipe(inputFilter).pipe(gameFilter);
+start();
+process.stdin.pipe(inputFilter)
+             .pipe(gameFilter)
+             .pipe(outputFilter)
+             .pipe(process.stdout);
