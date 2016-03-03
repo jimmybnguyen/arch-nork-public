@@ -268,7 +268,7 @@ var processAns = function(answer) {
                         io.close();
                         io.input.destroy();
                     } else {
-                        io.question(questions[currentQuestion], processAns);
+                            io.question(world.rooms[currentRoom].description, processAns);
                     }
                 });
             } 
@@ -279,7 +279,7 @@ var processAns = function(answer) {
     }
     // if you've already won the game, change the question to allow the player more time
     if (won) {
-        io.question(questions[currentQuestion + 1] + '\n', processAns);
+        io.question(world.rooms[currentRoom].description + '\n', processAns);
     } else if (currentRoom != 1) {
         askQuestion();
     }
