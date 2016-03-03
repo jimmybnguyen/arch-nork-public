@@ -27,7 +27,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 5. Did you receive help from any other sources (classmates, etc)? If so, please list who (be specific!). #####
-> Answer goes here!
+> Kendall, Andrew
 
 
 

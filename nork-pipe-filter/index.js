@@ -5,18 +5,12 @@ var stream = require('stream');
 var readLine = require('readline');
 var util = require('util');
 
-var currentRoom = world.rooms[0];
+var currentRoom = 0;
 var inventory = [];
 var gameOver = false;
 
-/*
-var rl = readLine.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});*/
-
 function start() {
-    console.log(currentRoom.description);
+    console.log(world.rooms[currentRoom].description);
     //getAnswer();
 }
 
@@ -43,11 +37,16 @@ var gameFilter = new stream.Transform({
         if (output.substring(0,2).toUpperCase() == 'GO') {
             //stores the direction of movement
             info = output.substring(3).toLowerCase();
-            //move(direction);
+            //move(info);
+            output = currentRoom.description;
         } else if (output.toUpperCase() == 'INVENTORY') {
            output = printInventory(inventory);
-        } else if (output.toUpperCase() == 'TAKE') {
-            
+        } else if (output.substring(0,4).toUpperCase() == 'TAKE') {
+            info = output.substring(5).toLowerCase();
+            output = take(info);
+            //var item = searchRoom(info)
+            //inventory.push(item);
+            //output = "You added " + item + " to your inventory"
         } else if (output.toUpperCase() == 'USE') {
             //stores the item to be used 
             info = output.substring(4).toLowerCase();
@@ -89,7 +88,55 @@ function printInventory(inventory) {
     return '\n' + '**********INVENTORY********** \n' + 
         inventory.toString() + '\n' + '*****************************';
 }
+/*
+var searchRoom = function(itemName) {
+    var usableItems = world.rooms[currentRoom].uses;
+    if (usableItems) {
+        usableItems.forEach(function(roomItem) {
+            if (roomItem.item == itemName) {
+                return this.itemName;
+            } 
+        });
+    }
+    
+    return null;
+}*/
+var take = function(itemName) {
+    // if that room has any items
+    var result;
+    if(world.rooms[currentRoom].items) {
+        var activeItem;
+        // and the current room has that item
+        //var activeItem = world.rooms[currentRoom].items;
+        for (var i = 0; i < world.rooms[currentRoom].items.length; i++) {
+            if (world.rooms[currentRoom].items[i] == itemName) { 
+                activeItem = itemName;
+                inventory.push(activeItem);
+                result = activeItem + " added to inventory";
+                if (i > -1) {
+                    world.rooms[currentRoom].items.splice(i, 1);
+                }
+            }
+        }
+        if (activeItem == null) {
+            result = "That item is not in this room!"
+        }
+    } else {
+        result = "There are no items in this room to take";
+    }
+    return result;
+}
 
+var roomIndex = function(roomName) {
+    for (var i = 0; i < world.rooms.length; i++) {
+        if (world.rooms[i].id == roomName) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/*
 function take(room, item) {
     if (currentRoom.items != null) {
         inventory.push(currentRoom.items);  
@@ -100,8 +147,11 @@ function take(room, item) {
     } else {
         console.log('There is nothing in this room to take.');    
     }
-}
+}*/
 
+function move(direction) {
+    
+}
 /*
 process.stdin
   .pipe(firstFilter);
