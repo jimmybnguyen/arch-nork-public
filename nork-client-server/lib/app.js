@@ -51,8 +51,7 @@ var enterRoom = function(roomName) {
     // print out the room's details
     roomDetails();
     if(won) {
-        io.close();
-        io.input.destroy();
+        // do shit
     }
     /////////////////////////////////////////////////
     // come back here
@@ -62,7 +61,7 @@ var enterRoom = function(roomName) {
 // and returns that item's object
 // returns null if that item isn't there
 var searchRoom = function(itemName) {
-    world[currentRoom].uses.forEach(function(roomItem) {
+    world.rooms[currentRoom].uses.forEach(function(roomItem) {
         if (roomItem.item == itemName) {
             return this.itemName;
         } 
@@ -84,24 +83,21 @@ var roomIndex = function(roomName) {
 // prints out to the user the surrounding rooms
 // in a nice, formatted way
 var formatRooms = function(roomIndex) {
-    if(currentRoom !== 1) {
-        var room = world.rooms[roomIndex];
-        console.log('ROOMS:');
-        for(var exit in room.exits) {
-            console.log(exit + ': ' + room.exits[exit].name);
-            if(room.exits[exit].locked) {
-                console.log('^ locked');
-            }
-
-        }
-        console.log();
+    var room = world.rooms[roomIndex];
+    console.log('ROOMS:');
+    for(var exit in room.exits) {
+        console.log(exit + ': ' + room.exits[exit].id);
     }
 }
+
+///////////////////////////////////////////////
+////////////// CODE GOOD UP TILL HERE /////////
+///////////////////////////////////////////////
 
 // prints the room details of the current room
 // including its name, description, and attached rooms
 var roomDetails = function() {
-    console.log(world.rooms[currentRoom].id.toUpperCase() + '\n \n' + world.rooms[currentRoom].description + '\n');
+    console.log(world.rooms[currentRoom].id.toUpperCase() + '\n \n');
     formatRooms(currentRoom);
 }
 
@@ -118,14 +114,8 @@ var go = function(direction) {
         direction = direction.split(' ')[1];
         // if the room has that direction
         if(room.exits[direction]) {
-            // if the room is locked
-            if(room.exits[direction].locked) {
-                console.log("The room is locked! You must unlock it with a KEY first.\n");
-            } else {
-                // it's unlocked! Let's go!
-                console.log("Entering " + room.exits[direction].name + '...');
-                enterRoom(room.exits[direction].name);
-            }
+            console.log("Entering " + room.exits[direction].name + '...');
+            enterRoom(room.exits[direction].name);
         } else {
             console.log("Sorry, that's not a valid direction.\n");
         }
@@ -142,6 +132,8 @@ var go = function(direction) {
    
 }
 
+// TEST THIS
+//////////////////////////////////
 // takes an item of the given name from the environment 
 // but only if that item is in that room
 // and adds it to the inventory
@@ -150,13 +142,13 @@ var take = function(itemName) {
     if(world.rooms[currentRoom].items) {
         // and the current room has that item
         var activeItem = world.rooms[currentRoom].items[itemName];
-        if (activeItem && activeItem.isThere) {
+        if (activeItem) {
             // pushes that item name to the inventory
             inventory.push(activeItem);
             console.log(activeItem.name + " added to Inventory.\n")
-            activeItem.isThere = false;
-            if(won) {
-                currentQuestion+=1;
+            var index = world.rooms.indexOf(activeItem);
+            if (index > -1) {
+                world.rooms.items.splice(index, 1);
             }
         } else {
             console.log("That item is not in this room!\n");
@@ -197,13 +189,17 @@ var use = function(itemName) {
                     if (!itemObject.effect.consumed) {
                         // update the current room to where the item
                         // leads the user
-                        currentRoom = roomIndex(itemObject.effect.goto);
-                        roomDetails();
+                        if (itemObject.effect.goto == "won") {
+///////////////////////////////////////////
+                            // WON()
+                        } else {
+                            currentRoom = roomIndex(itemObject.effect.goto);
+                            roomDetails();
+                        }
                     }  
                 } else {
                     server.client.write("That object doesn't do anything");
                 }
-            } 
             } else {
                 server.client.write("You can't use that here");
             }
@@ -211,31 +207,11 @@ var use = function(itemName) {
             // the dreaded response!!
             server.client.write("You can't use any item here");
         }
-         // if it's a key
-        if(activeItem.name == "Key") {
-            // if you're in the right room
-            if(currentRoom == 0) {
-                // say you used it
-                console.log(activeItem.used + "\n");
-                // and unlock the door
-                world.rooms[currentRoom].exits["south"].locked = false;
-            } else {
-                console.log("That doesn't work in this room!");
-            }
-        } else if (activeItem.name == "Treasure") {
-            // if it's the treasure, let the game know the user has progressed
-            currentQuestion+=1;
-            console.log(activeItem.used + "\n");
-        } else {
-            // it's not a key, so just use the item without an effect
-            console.log(activeItem.used + "\n");
-        }
+        console.log(activeItem.used + "\n");
     } else {
         console.log('You do not have "' + itemName + '"');
     };
 }
-
-
 
 // shows the user's inventory as long as how the item
 // can be used. Also prints that they have nothing in
@@ -244,7 +220,7 @@ var showInventory = function() {
     if (inventory.length > 0) {
         console.log("INVENTORY\n");
         for(var i = 0; i < inventory.length; i++) {
-            console.log(inventory[i].name + '\n' + inventory[i].use + '\n');
+            console.log(inventory[i].name + '\n');
         }     
     } else {
         console.log("You have nothing in your inventory.");
@@ -252,13 +228,18 @@ var showInventory = function() {
     
 }
 
+///////////////////////////////////////////////
+////////////// CODE GOOD UP TILL HERE /////////
+///////////////////////////////////////////////
+// world.rooms[currentRoom].description + '\n')
+
 /////////////////////////////
 /////// COMMUNICATION ///////
 /////////////////////////////
 
 // asks the question
 var askQuestion = function() {
-    io.question(questions[currentQuestion] + '\n', processAns);
+    io.question("What next?" + '\n', processAns);
 }
 
 // processes the answer given to the input for
