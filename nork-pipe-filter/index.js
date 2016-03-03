@@ -17,7 +17,6 @@ function start() {
 var inputFilter = new stream.Transform({
   transform (chunk, encoding, done) { // This is the _transform method
       var answer = chunk.toString().toUpperCase().trim();
-
       this.push(answer); //pipe out data
       done(); //callback for when finished
   },
@@ -32,28 +31,24 @@ var inputFilter = new stream.Transform({
 
 var gameFilter = new stream.Transform({
     transform (chunk, encoding, done) {
-        var output = chunk.toString();
-        var info;
-        if (output.substring(0,2).toUpperCase() == 'GO') {
+        var answer = chunk.toString();
+        var output;
+        if (answer.substring(0,2).toUpperCase() == 'GO') {
             //stores the direction of movement
-            info = output.substring(3).toLowerCase();
-            //move(info);
-            output = currentRoom.description;
-        } else if (output.toUpperCase() == 'INVENTORY') {
+            var direction = answer.substring(3).toLowerCase();
+            output = move(direction);
+        } else if (answer.toUpperCase() == 'INVENTORY') {
            output = printInventory(inventory);
-        } else if (output.substring(0,4).toUpperCase() == 'TAKE') {
-            info = output.substring(5).toLowerCase();
-            output = take(info);
-            //var item = searchRoom(info)
-            //inventory.push(item);
-            //output = "You added " + item + " to your inventory"
-        } else if (output.toUpperCase() == 'USE') {
+        } else if (answer.substring(0,4).toUpperCase() == 'TAKE') {
+            var item = answer.substring(5).toLowerCase();
+            output = take(item);
+        } else if (answer.substring(0,3).toUpperCase() == 'USE') {
             //stores the item to be used 
-            info = output.substring(4).toLowerCase();
+            var item = answer.substring(4).toLowerCase();
+            output = use(item);
         } else {  
             output = "INVALID COMMAND";
         }
-        
         this.push(output); //pipe out data
         done(); //callback for when finished
       },
@@ -88,19 +83,7 @@ function printInventory(inventory) {
     return '\n' + '**********INVENTORY********** \n' + 
         inventory.toString() + '\n' + '*****************************';
 }
-/*
-var searchRoom = function(itemName) {
-    var usableItems = world.rooms[currentRoom].uses;
-    if (usableItems) {
-        usableItems.forEach(function(roomItem) {
-            if (roomItem.item == itemName) {
-                return this.itemName;
-            } 
-        });
-    }
-    
-    return null;
-}*/
+
 var take = function(itemName) {
     // if that room has any items
     var result;
@@ -127,6 +110,20 @@ var take = function(itemName) {
     return result;
 }
 
+var move = function(direction) {
+    var currentExits = world.rooms[currentRoom].exits;
+    if (currentExits[direction] != null) {
+        var index = roomIndex(currentExits[direction].id);
+        currentRoom = index;
+        if (world.rooms[currentRoom].status == "lost") {
+            gameOver = true;
+        }
+        return world.rooms[currentRoom].description;
+    } else {
+        return "No room could be found in that direction";   
+    }
+}
+    
 var roomIndex = function(roomName) {
     for (var i = 0; i < world.rooms.length; i++) {
         if (world.rooms[i].id == roomName) {
@@ -136,42 +133,33 @@ var roomIndex = function(roomName) {
     return -1;
 }
 
-/*
-function take(room, item) {
-    if (currentRoom.items != null) {
-        inventory.push(currentRoom.items);  
-        console.log('Items added to inventory: ' + currentRoom.items);
-        
-        // Remove items from the room
-        currentRoom.items = null;
+var use = function(itemName) {
+    var activeItem;
+    inventory.forEach(function(item) {
+        if (item.name.toLowerCase() == itemName) {
+            activeItem = item;
+        }
+    });
+    if (activeItem) {
+        if (currentRoom.uses.length > 0) {
+            var itemObject = searchRoom(activeItem);
+            if (itemObject) {
+                if (itemObject.effect) {
+                    if (!itemObject.effect.consumed) {
+                        currentRoom = roomIndex(itemObject.effect.goto);   
+                    }
+                } else {
+                    return "That object doesn't do anything!";   
+                }
+            } else {
+                return "You can't use that here";   
+            }
+        }
     } else {
-        console.log('There is nothing in this room to take.');    
+        return ('You do not have "' + itemName + '"'); 
     }
-}*/
-
-function move(direction) {
-    
 }
-/*
-process.stdin
-  .pipe(firstFilter);
-*/
-/*
-  process.stdin.setEncoding('utf8');
-  var util = require('util');
 
-  process.stdin.on('data', function (text) {
-    console.log('received data:', util.inspect(text));
-    if (text === 'quit\n') {
-      done();
-    }
-  });
-
-  function done() {
-    console.log('Now that process.stdin is paused, there is nothing more to do.');
-    process.exit();
-  }
-  */
 start();
 process.stdin.pipe(inputFilter)
              .pipe(gameFilter)
