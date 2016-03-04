@@ -10,6 +10,7 @@ var inventory = [];
 var gameOver = false;
 
 function start() {
+    console.log(help());
     console.log(world.rooms[currentRoom].description);
 }
 
@@ -48,6 +49,9 @@ var gameFilter = new stream.Transform({
             if (world.rooms[currentRoom].id == "won") {
                 gameOver = true;   
             }
+            
+        } else if (answer.toUpperCase() == 'HELP') {
+                 output = help();
         } else {  
             output = "INVALID COMMAND";
         }
@@ -122,7 +126,7 @@ var move = function(direction) {
         }
         return world.rooms[currentRoom].description;
     } else {
-        return "No room could be found in that direction";   
+        return "There is nothing " + direction + " from here";   
     }
 }
     
@@ -145,11 +149,11 @@ var use = function(itemName) {
     }
     if (activeItem) {
         if (world.rooms[currentRoom].uses.length > 0) {
-            var itemObject = searchRoom(activeItem); //return index?
-            if (itemObject) {
-                if (world.rooms[currentRoom].uses[0].effect) { 
-                    if (!world.rooms[currentRoom].uses[0].effect.consumed) {
-                        currentRoom = roomIndex(world.rooms[currentRoom].uses[0].effect.goto);  
+            var itemObject = searchRoom(activeItem);
+            if (itemObject != null) {
+                if (world.rooms[currentRoom].uses[itemObject].effect) { 
+                    if (!world.rooms[currentRoom].uses[itemObject].effect.consumed) {
+                        currentRoom = roomIndex(world.rooms[currentRoom].uses[itemObject].effect.goto);  
                         return world.rooms[currentRoom].description;
                     }
                 } else {
@@ -163,14 +167,23 @@ var use = function(itemName) {
         return ('You do not have "' + itemName + '"'); 
     }
 }
+
 var searchRoom = function(itemName) {
-    //console.log(world.rooms[currentRoom].uses[0].item);
-    for (var roomItem in world.rooms[currentRoom].uses[0].item) {
-        if (world.rooms[currentRoom].uses[0].item == itemName) {
-            return itemName;   
+    for (var i = 0; i < world.rooms[currentRoom].uses.length; i++) {
+        if (world.rooms[currentRoom].uses[i].item == itemName) {
+            return i;   
         }
     }
     return null;
+}
+
+function help() {
+    return('\n' + 
+     '**********COMMANDS**********' + '\n' + 
+     'GO (north, south, east, west)' + '\n' +
+     'TAKE (item)' + '\n' + 'USE (item)' + '\n' + 'INVENTORY' + 
+     '\n' + 'Type HELP to see this again' + '\n' +
+     '****************************' + '\n')
 }
 
 start();
