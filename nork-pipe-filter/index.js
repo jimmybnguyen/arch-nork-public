@@ -5,25 +5,17 @@ var stream = require('stream');
 var readLine = require('readline');
 var util = require('util');
 
-var currentRoom = world.rooms[0];
+var currentRoom = 0;
 var inventory = [];
 var gameOver = false;
 
-/*
-var rl = readLine.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});*/
-
 function start() {
-    console.log(currentRoom.description);
-    //getAnswer();
+    console.log(world.rooms[currentRoom].description);
 }
 
 var inputFilter = new stream.Transform({
   transform (chunk, encoding, done) { // This is the _transform method
       var answer = chunk.toString().toUpperCase().trim();
-
       this.push(answer); //pipe out data
       done(); //callback for when finished
   },
@@ -38,23 +30,27 @@ var inputFilter = new stream.Transform({
 
 var gameFilter = new stream.Transform({
     transform (chunk, encoding, done) {
-        var output = chunk.toString();
-        var info;
-        if (output.substring(0,2).toUpperCase() == 'GO') {
+        var answer = chunk.toString();
+        var output;
+        if (answer.substring(0,2).toUpperCase() == 'GO') {
             //stores the direction of movement
-            info = output.substring(3).toLowerCase();
-            //move(direction);
-        } else if (output.toUpperCase() == 'INVENTORY') {
+            var direction = answer.substring(3).toLowerCase();
+            output = move(direction);
+        } else if (answer.toUpperCase() == 'INVENTORY') {
            output = printInventory(inventory);
-        } else if (output.toUpperCase() == 'TAKE') {
-            
-        } else if (output.toUpperCase() == 'USE') {
+        } else if (answer.substring(0,4).toUpperCase() == 'TAKE') {
+            var item = answer.substring(5).toLowerCase();
+            output = take(item);
+        } else if (answer.substring(0,3).toUpperCase() == 'USE') {
             //stores the item to be used 
-            info = output.substring(4).toLowerCase();
+            var item = answer.substring(4).toLowerCase();
+            output = use(item);
+            if (world.rooms[currentRoom].id == "won") {
+                gameOver = true;   
+            }
         } else {  
             output = "INVALID COMMAND";
         }
-        
         this.push(output); //pipe out data
         done(); //callback for when finished
       },
@@ -90,38 +86,93 @@ function printInventory(inventory) {
         inventory.toString() + '\n' + '*****************************';
 }
 
-function take(room, item) {
-    if (currentRoom.items != null) {
-        inventory.push(currentRoom.items);  
-        console.log('Items added to inventory: ' + currentRoom.items);
-        
-        // Remove items from the room
-        currentRoom.items = null;
+var take = function(itemName) {
+    // if that room has any items
+    var result;
+    if(world.rooms[currentRoom].items) {
+        var activeItem;
+        // and the current room has that item
+        //var activeItem = world.rooms[currentRoom].items;
+        for (var i = 0; i < world.rooms[currentRoom].items.length; i++) {
+            if (world.rooms[currentRoom].items[i] == itemName) { 
+                activeItem = itemName;
+                inventory.push(activeItem);
+                result = activeItem + " added to inventory";
+                if (i > -1) {
+                    world.rooms[currentRoom].items.splice(i, 1);
+                }
+            }
+        }
+        if (activeItem == null) {
+            result = "That item is not in this room!"
+        }
     } else {
-        console.log('There is nothing in this room to take.');    
+        result = "There are no items in this room to take";
     }
+    return result;
 }
 
-/*
-process.stdin
-  .pipe(firstFilter);
-*/
-/*
-  process.stdin.setEncoding('utf8');
-  var util = require('util');
-
-  process.stdin.on('data', function (text) {
-    console.log('received data:', util.inspect(text));
-    if (text === 'quit\n') {
-      done();
+var move = function(direction) {
+    var currentExits = world.rooms[currentRoom].exits;
+    if (currentExits[direction] != null) {
+        var index = roomIndex(currentExits[direction].id);
+        currentRoom = index;
+        if (world.rooms[currentRoom].status == "lost") {
+            gameOver = true;
+        }
+        return world.rooms[currentRoom].description;
+    } else {
+        return "No room could be found in that direction";   
     }
-  });
+}
+    
+var roomIndex = function(roomName) {
+    for (var i = 0; i < world.rooms.length; i++) {
+        if (world.rooms[i].id == roomName) {
+            return i;
+        }
+    }
+    return -1;
+}
 
-  function done() {
-    console.log('Now that process.stdin is paused, there is nothing more to do.');
-    process.exit();
-  }
-  */
+var use = function(itemName) {
+    var activeItem;
+    for (var itemIndex in inventory) {
+        var item = inventory[itemIndex];
+        if (item.toLowerCase() == itemName) {
+            activeItem = item;
+        }
+    }
+    if (activeItem) {
+        if (world.rooms[currentRoom].uses.length > 0) {
+            var itemObject = searchRoom(activeItem); //return index?
+            if (itemObject) {
+                if (world.rooms[currentRoom].uses[0].effect) { 
+                    if (!world.rooms[currentRoom].uses[0].effect.consumed) {
+                        currentRoom = roomIndex(world.rooms[currentRoom].uses[0].effect.goto);  
+                        return world.rooms[currentRoom].description;
+                    }
+                } else {
+                    return "That object doesn't do anything!";   
+                }
+            } else {
+                return "You can't use that here";   
+            }
+        }
+    } else {
+        return ('You do not have "' + itemName + '"'); 
+    }
+}
+var searchRoom = function(itemName) {
+    //console.log(world.rooms[currentRoom].uses[0].item);
+    for (var roomItem in world.rooms[currentRoom].uses[0].item) {
+        if (world.rooms[currentRoom].uses[0].item == itemName) {
+            return itemName;   
+        }
+    }
+    return null;
+}
+
 start();
 process.stdin.pipe(inputFilter)
              .pipe(gameFilter)
