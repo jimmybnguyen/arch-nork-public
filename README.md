@@ -18,6 +18,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 ##### 3. Did you add an extra features to either version of your game? If so, what?
 > Linnea: I allowed the user the option to quit after submitting invalid input more than two times.
+
 > Jimmy: I added a help feature that displays all of the commands for the game to the user in the pipe-and-filter implementation. I also added a feature that removes consumable items from the inventory upon use. 
 
 
