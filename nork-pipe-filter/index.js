@@ -11,7 +11,6 @@ var gameOver = false;
 
 function start() {
     console.log(world.rooms[currentRoom].description);
-    //getAnswer();
 }
 
 var inputFilter = new stream.Transform({
@@ -46,6 +45,9 @@ var gameFilter = new stream.Transform({
             //stores the item to be used 
             var item = answer.substring(4).toLowerCase();
             output = use(item);
+            if (world.rooms[currentRoom].id == "won") {
+                gameOver = true;   
+            }
         } else {  
             output = "INVALID COMMAND";
         }
@@ -135,18 +137,20 @@ var roomIndex = function(roomName) {
 
 var use = function(itemName) {
     var activeItem;
-    inventory.forEach(function(item) {
-        if (item.name.toLowerCase() == itemName) {
+    for (var itemIndex in inventory) {
+        var item = inventory[itemIndex];
+        if (item.toLowerCase() == itemName) {
             activeItem = item;
         }
-    });
+    }
     if (activeItem) {
-        if (currentRoom.uses.length > 0) {
-            var itemObject = searchRoom(activeItem);
+        if (world.rooms[currentRoom].uses.length > 0) {
+            var itemObject = searchRoom(activeItem); //return index?
             if (itemObject) {
-                if (itemObject.effect) {
-                    if (!itemObject.effect.consumed) {
-                        currentRoom = roomIndex(itemObject.effect.goto);   
+                if (world.rooms[currentRoom].uses[0].effect) { 
+                    if (!world.rooms[currentRoom].uses[0].effect.consumed) {
+                        currentRoom = roomIndex(world.rooms[currentRoom].uses[0].effect.goto);  
+                        return world.rooms[currentRoom].description;
                     }
                 } else {
                     return "That object doesn't do anything!";   
@@ -158,6 +162,15 @@ var use = function(itemName) {
     } else {
         return ('You do not have "' + itemName + '"'); 
     }
+}
+var searchRoom = function(itemName) {
+    //console.log(world.rooms[currentRoom].uses[0].item);
+    for (var roomItem in world.rooms[currentRoom].uses[0].item) {
+        if (world.rooms[currentRoom].uses[0].item == itemName) {
+            return itemName;   
+        }
+    }
+    return null;
 }
 
 start();
