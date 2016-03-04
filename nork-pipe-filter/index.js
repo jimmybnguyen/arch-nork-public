@@ -184,13 +184,15 @@ var use = function(itemName) {
                 var itemObject = searchRoom(activeItem);
                 if (itemObject != null) { //the item can be used in the current room
                     if (roomUses[itemObject].effect) { // the object does something
-                        if (!roomUses[itemObject].effect.consumed) { //the item has not been used yet
-                            roomUses[itemObject].effect.consumed = true; //item cannot be used here anymore
-                            currentRoom = roomIndex(roomUses[itemObject].effect.goto); //changes room due to using item
-                            return (world.rooms[currentRoom].description + '\n');
-                        } else {
-                            return ("You already used this item here" + '\n');   
+                        currentRoom = roomIndex(roomUses[itemObject].effect.goto); //changes room due to using item
+                        if (roomUses[itemObject].effect.consumed) { //the item is consumable  
+                            for (var i = 0; i < inventory.length; i++) {
+                                if (inventory[i] == itemName.toLowerCase()) {
+                                    delete inventory[i];
+                                }
+                            }
                         }
+                        return (world.rooms[currentRoom].description + '\n');
                     } else {
                         return ("That object doesn't do anything!" + '\n');   
                     }

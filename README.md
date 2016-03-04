@@ -6,7 +6,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 1. Did you work with a partner? If so, who?
-> Answer goes here!
+> I (Jimmy Nguyen) worked with Linnea Watson.
 
 
 
@@ -18,16 +18,17 @@ The below questions should be answered (in detail!) regarding your submission!
 
 ##### 3. Did you add an extra features to either version of your game? If so, what?
 > I allowed the user the option to quit after submitting invalid input more than two times.
+Jimmy: I added a help feature that displays all of the commands for the game to the user. I also added a feature that removes consumable items from the inventory upon use. 
 
 
 
 ##### 4. Approximately how many hours did it take you to complete this assignment? #####
-> Answer goes here!
+> Jimmy: It took me about 15-20 hours to do pimplement the pipe-and-filter architecture.
 
 
 
 ##### 5. Did you receive help from any other sources (classmates, etc)? If so, please list who (be specific!). #####
-> Kendall, Andrew
+> Jimmy: I worked with Kendall to discuss pipe-and-filters. 
 
 
 
