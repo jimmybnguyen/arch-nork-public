@@ -4,8 +4,6 @@
 // also allows program to read input from the user
 var world = require('../../common/world.json');
 var readline = require('readline');
-var server = require('../server/server.js');
-var client = require('../client/client.js');
 
 var io = readline.createInterface({
   input: process.stdin,
