@@ -5,36 +5,43 @@ var stream = require('stream');
 var readLine = require('readline');
 var util = require('util');
 
-var currentRoom = 0;
+var currentRoom = 0; //index of the current room in the world
 var inventory = [];
 var gameOver = false;
 
+/**
+* Displays the starting information for the game
+*/
 function start() {
     console.log(help());
     console.log(world.rooms[currentRoom].description);
 }
 
+/**
+* Processes the user's input 
+*/
 var inputFilter = new stream.Transform({
-  transform (chunk, encoding, done) { // This is the _transform method
+  transform (chunk, encoding, done) { 
       var answer = chunk.toString().toUpperCase().trim();
       this.push(answer); //pipe out data
       done(); //callback for when finished
   },
 
-  flush(done) { // This is the _flush method
+  flush(done) { 
     //any final processing occurs here
     done();
   }
     
 });
 
-
+/**
+* Transform the user's input into world state changes 
+*/
 var gameFilter = new stream.Transform({
     transform (chunk, encoding, done) {
         var answer = chunk.toString();
         var output;
         if (answer.substring(0,2).toUpperCase() == 'GO') {
-            //stores the direction of movement
             var direction = answer.substring(3).toLowerCase();
             output = move(direction);
         } else if (answer.toUpperCase() == 'INVENTORY') {
@@ -43,7 +50,6 @@ var gameFilter = new stream.Transform({
             var item = answer.substring(5).toLowerCase();
             output = take(item);
         } else if (answer.substring(0,3).toUpperCase() == 'USE') {
-            //stores the item to be used 
             var item = answer.substring(4).toLowerCase();
             output = use(item);
             if (world.rooms[currentRoom].id == "won") {
@@ -55,48 +61,56 @@ var gameFilter = new stream.Transform({
         } else {  
             output = "INVALID COMMAND";
         }
-        this.push(output); //pipe out data
-        done(); //callback for when finished
+        this.push(output); 
+        done(); 
       },
 
-      flush(done) { // This is the _flush method
-        //any final processing occurs here
+      flush(done) { 
         done();
       }
     
 });
 
+/**
+* Transforms the world state changes into output 
+*/
 var outputFilter = new stream.Transform({
     transform (chunk, encoding, done) {
         var output = chunk.toString();
         //console.log(output);
-        this.push(output + "\n"); //pipe out data
-        done(); //callback for when finished
+        this.push(output + "\n"); 
+        done();
         if (gameOver) {
             process.exit();
         }   
       },
     
-      flush(done) { // This is the _flush method
-        //any final processing occurs here
+      flush(done) { 
         done();
       }
     
 
 });
 
+/**
+* Returns the current state of the inventory 
+* @param {object} inventory the player's inventory
+* @returns {string} a representation of the current inventory
+*/
 function printInventory(inventory) {
     return '\n' + '**********INVENTORY********** \n' + 
         inventory.toString() + '\n' + '*****************************';
 }
 
+/**
+* Adds an item in the room to the player's inventory
+* @param {string} itemName the name of the item to be taken
+* @returns {string} the result of taking an item 
+*/
 var take = function(itemName) {
-    // if that room has any items
-    var result;
+    var result; //the output to the user
     if(world.rooms[currentRoom].items) {
-        var activeItem;
-        // and the current room has that item
-        //var activeItem = world.rooms[currentRoom].items;
+        var activeItem; //the item in the room
         for (var i = 0; i < world.rooms[currentRoom].items.length; i++) {
             if (world.rooms[currentRoom].items[i] == itemName) { 
                 activeItem = itemName;
@@ -116,6 +130,11 @@ var take = function(itemName) {
     return result;
 }
 
+/**
+* Changes the current room in the game
+* @param {string} direction where the player wants to move
+* @returns {string} the result of moving in a direction
+*/
 var move = function(direction) {
     var currentExits = world.rooms[currentRoom].exits;
     if (currentExits[direction] != null) {
@@ -124,12 +143,17 @@ var move = function(direction) {
         if (world.rooms[currentRoom].status == "lost") {
             gameOver = true;
         }
-        return world.rooms[currentRoom].description;
+        return world.rooms[currentRoom].description; 
     } else {
         return "There is nothing " + direction + " from here";   
     }
 }
     
+/**
+* Searches for a room in the world
+* @param {string} roomName name of the room
+* @returns {number} the index of the room in the world 
+*/
 var roomIndex = function(roomName) {
     for (var i = 0; i < world.rooms.length; i++) {
         if (world.rooms[i].id == roomName) {
@@ -139,6 +163,11 @@ var roomIndex = function(roomName) {
     return -1;
 }
 
+/**
+* Uses an item from the player's inventory
+* @param {string} itemName the name of the item to be used 
+* @returns {string} the result of using the item
+*/
 var use = function(itemName) {
     var activeItem;
     for (var itemIndex in inventory) {
@@ -147,13 +176,14 @@ var use = function(itemName) {
             activeItem = item;
         }
     }
-    if (activeItem) {
+    if (activeItem) { //the item was found in the inventory
         if (world.rooms[currentRoom].uses.length > 0) {
             var itemObject = searchRoom(activeItem);
-            if (itemObject != null) {
-                if (world.rooms[currentRoom].uses[itemObject].effect) { 
-                    if (!world.rooms[currentRoom].uses[itemObject].effect.consumed) {
-                        currentRoom = roomIndex(world.rooms[currentRoom].uses[itemObject].effect.goto);  
+            if (itemObject != null) { //the item can be used in the current room
+                if (world.rooms[currentRoom].uses[itemObject].effect) { // the object does something
+                    if (!world.rooms[currentRoom].uses[itemObject].effect.consumed) { //the item has not been used yet
+                        //changes room due to using the item
+                        currentRoom = roomIndex(world.rooms[currentRoom].uses[itemObject].effect.goto);
                         return world.rooms[currentRoom].description;
                     }
                 } else {
@@ -168,6 +198,11 @@ var use = function(itemName) {
     }
 }
 
+/**
+* Searches the current room for an item 
+* @param {string} itemName the item to be found
+* @returns {number} the location of the item in the room
+*/
 var searchRoom = function(itemName) {
     for (var i = 0; i < world.rooms[currentRoom].uses.length; i++) {
         if (world.rooms[currentRoom].uses[i].item == itemName) {
@@ -177,6 +212,10 @@ var searchRoom = function(itemName) {
     return null;
 }
 
+/**
+* Displays all of the commands to the player
+* @returns {string} every command in the game
+*/
 function help() {
     return('\n' + 
      '**********COMMANDS**********' + '\n' + 
