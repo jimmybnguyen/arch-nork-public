@@ -16,10 +16,9 @@ var PORT = 8000;
 var client = new net.Socket();
 
 client.on('data', function(data) { //when we get data
-    console.log("Client got data\n" + data);
-    io.question(data + "", function(response) {
+    io.question(data + "\nWhat would you like to do? ", function(response) {
       client.write(response); 
-    }); //output it  */
+    }); //output it 
 });
 
 client.on('close', function() { //when connection closed
