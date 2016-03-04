@@ -17,22 +17,21 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 3. Did you add an extra features to either version of your game? If so, what?
-> I allowed the user the option to quit after submitting invalid input more than two times.
-Jimmy: I added a help feature that displays all of the commands for the game to the user. I also added a feature that removes consumable items from the inventory upon use. 
+> Linnea: I allowed the user the option to quit after submitting invalid input more than two times.
+> Jimmy: I added a help feature that displays all of the commands for the game to the user in the pipe-and-filter implementation. I also added a feature that removes consumable items from the inventory upon use. 
 
 
 
 ##### 4. Approximately how many hours did it take you to complete this assignment? #####
-> Jimmy: It took me about 15-20 hours to do pimplement the pipe-and-filter architecture.
+> Jimmy: It took me about 10-13 hours to implement the pipe-and-filter architecture for this game.
 
 
 
 ##### 5. Did you receive help from any other sources (classmates, etc)? If so, please list who (be specific!). #####
-> Jimmy: I worked with Kendall to discuss pipe-and-filters. 
+> Jimmy: I worked with Kendall Reonal to dsiscuss pipe-and-filters. 
 
 
 
 ##### 6. Did you encounter any problems in this assignment we should warn students about in the future? How can we make the assignment better? #####
-> Answer goes here!
-
+> Jimmy: Mentioning that using a pipe-and-filter architecture is not the best way to design this game in the assignment specs, like how it was mentioned in lecture, would had cleared up some confusion I had at the start.
 
