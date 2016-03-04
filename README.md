@@ -17,7 +17,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 3. Did you add an extra features to either version of your game? If so, what?
-> Answer goes here!
+> I allowed the user the option to quit after submitting invalid input more than two times.
 
 
 
