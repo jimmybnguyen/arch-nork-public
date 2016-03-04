@@ -39,7 +39,7 @@ var inputFilter = new stream.Transform({
 var gameFilter = new stream.Transform({
     transform (chunk, encoding, done) {
         var answer = chunk.toString();
-        var output;
+        var output; //representation of the world state changes
         if (answer.substring(0,2).toUpperCase() == 'GO') {
             var direction = answer.substring(3).toLowerCase();
             output = move(direction);
