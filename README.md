@@ -42,7 +42,7 @@ It would have been easier to reuse my old application code if I could directly s
 
 
 ##### 5. Did you receive help from any other sources (classmates, etc)? If so, please list who (be specific!). #####
-> Jimmy: I worked with Kendall Reonal to dsiscuss pipe-and-filters. 
+> Jimmy: I worked with Kendall Reonal to discuss pipe-and-filters. 
 
 > Linnea: Only the questions to Joel asked on slack and discussions with my partner.
 
