@@ -24,9 +24,13 @@ It would have been easier to reuse my old application code if I could directly s
 ##### 3. Did you add an extra features to either version of your game? If so, what?
 > Jimmy: I added a help feature that displays all of the commands for the game to the user in the pipe-and-filter implementation. I also added a feature that removes consumable items from the inventory upon use. 
 
-> Linnea: I also added a feature that allows the user to remove consumable features from the inventory. I also let the users know whether or not they can't use any item in the room, or they just don't have any items. Same with removing items, if there were no items, the response was different than if there were items and you just couldn't use them. 
+> Linnea: > IMPORTANT! (EXTRA CREDIT?) : As the spec suggested, I also allowed new clients to connect with their own unique game session, so that multiple clients can connect at the same time!
 
-> I also included server-side logging of what was going on behind the scenes, so that the developer could more accurately debug and understand the data. I've started on making it possible to reset the game, and give new clients a new version of the game.
+> I also added a feature that allows the user to remove consumable features from the inventory. I also let the users know whether or not they can't use any item in the room, or they just don't have any items. Same with removing items, if there were no items, the response was different than if there were items and you just couldn't use them. 
+
+> I also included server-side logging of what was going on behind the scenes, so that the developer could more accurately debug and understand the data.
+
+
 
 
 
