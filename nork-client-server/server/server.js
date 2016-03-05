@@ -13,9 +13,10 @@ var host = require('../../common/host.js');
 /////////////////////////////
 
 server.on('connection', function(socket) {
+    var game = new app.Game();
    //send a message to the socket
     socket.write("Welcome to NORK! \nYour commands are GO, TAKE, USE, and INVENTORY. You can exit the game at any time by typing EXIT. \n \n");
-    socket.write(app.roomDetails() + "");
+    socket.write(game.roomDetails() + "");
     
     socket.on('data', function(data) {
         console.log(data + "");
@@ -24,7 +25,7 @@ server.on('connection', function(socket) {
             socket.write("Connection closed");
             socket.end();
         } else {
-            var response = app.processAns(data);
+            var response = game.processAns(data);
             // writes new output b
             if (!response) {
                 if (response === undefined) {
@@ -37,6 +38,7 @@ server.on('connection', function(socket) {
             }
             
             if (app.won || app.lost) {
+                game = new app.Game(); // reset
                 socket.end();
                 //socket.destroy()
                 //app.reset();
