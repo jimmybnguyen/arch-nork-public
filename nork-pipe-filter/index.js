@@ -2,6 +2,7 @@
 
 var stream = require('stream');
 var app = require('./lib/app.js');
+var inputFilter = require('./filters/inputFilter.js');
 
 /**
 * Processes the user's input 
@@ -17,7 +18,6 @@ var inputFilter = new stream.Transform({
     //any final processing occurs here
     done();
   }
-    
 });
 
 /**
@@ -50,7 +50,6 @@ var gameFilter = new stream.Transform({
       flush(done) { 
         done();
       }
-    
 });
 
 /**
@@ -73,8 +72,6 @@ var outputFilter = new stream.Transform({
       flush(done) { 
         done();
       }
-    
-
 });
 
 

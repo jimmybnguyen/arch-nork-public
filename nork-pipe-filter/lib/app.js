@@ -64,7 +64,7 @@ var move = function(direction) {
             var index = roomIndex(currentExits[direction].id);
             currentRoom = index;
             if (world.rooms[currentRoom].status == "lost") { //the player lost the game
-                gameOver = true;
+                this.gameOver = true;
             }
             return (world.rooms[currentRoom].description + '\n'); 
         } else {
