@@ -12,7 +12,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 ##### 2. Discuss how the different architectural styles affected the implementation of your program. Was one pattern easier to use or more effective _for this problem_? Why? How do the different styles influence the ability to add new features or modify existing functionality? What kind of changes would be easier or harder with each style?
 ##### This discussion should be a couple of paragraphs, giving a detailed analysis of how the styles work.
-> Answer goes here!
+> Since it encourages a batch mentality, the pipe-and-filter architecture was not the most effective for this problem because it is not appropriate for interaction. Pipe-and-filter is great to use for a program that must process streams of data, while supporting a simple composition and modularity. Since players are required to interact with Nork to get the full experience, creating filters and pipes to process input, transform input into world state changes, and transform those changes into output, complicates the process and increases the amount of computation overall. It would be easy to add in new filters to make the procedure of processing the user input more modular. For example, having a filter for each of the different commands. However, it would be difficult to process data representations other than strings if needed. 
 
 
 
@@ -24,7 +24,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 4. Approximately how many hours did it take you to complete this assignment? #####
-> Jimmy: It took me about 10-13 hours to implement the pipe-and-filter architecture for this game.
+> Jimmy: It took me about 15 hours to implement the pipe-and-filter architecture for this game.
 
 
 
