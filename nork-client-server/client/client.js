@@ -16,13 +16,20 @@ var PORT = 8000;
 var client = new net.Socket();
 
 client.on('data', function(data) { //when we get data
-    io.question(data + "\nWhat would you like to do? ", function(response) {
-      client.write(response); 
-    }); //output it 
+    if (data.toString().includes('lost') || data.toString().includes('WON') ) {
+        console.log(data + "");
+        client.end();
+    } else {
+        io.question(data + "\nWhat would you like to do? ", function(response) {
+            client.write(response); 
+        }); //output it 
+    }
+    
 });
 
 client.on('close', function() { //when connection closed
    console.log('Connection closed');
+   client.end();
 });
 
 client.connect(PORT, HOST, function() {

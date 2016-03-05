@@ -13,40 +13,39 @@ var app = require('../lib/app.js');
 
 server.on('connection', function(socket) {
    //send a message to the socket
-    socket.write("Welcome to NORK!. \nYour commands are GO, TAKE, USE, and INVENTORY. You can exit the game at any time by typing EXIT. \n \n");
+    socket.write("Welcome to NORK! \nYour commands are GO, TAKE, USE, and INVENTORY. You can exit the game at any time by typing EXIT. \n \n");
     socket.write(app.roomDetails() + "");
     
     
     
     socket.on('data', function(data) {
-        console.log("data is " + data);
+        console.log(data + "");
         data = data.toString().replace('\n', '').toLowerCase();
-        if (data + "" == 'EXIT') {
+        if (data + "" == 'exit') {
             socket.write("Connection closed");
             socket.end();
-        }
-        var response = app.processAns(data);
-        // writes new output b
-        if (!response) {
-            if (response === undefined) {
-                socket.write("I didn't get any input");
-            } else {
-                socket.write("I'm sorry, I didn't understand that command.");
-            }
-            //socket.write(roomDetails(currentRoom));
         } else {
-            socket.write(response);
+            var response = app.processAns(data);
+            // writes new output b
+            if (!response) {
+                if (response === undefined) {
+                    socket.write("I didn't get any input");
+                } else {
+                    socket.write("I'm sorry, I didn't understand that command.");
+                }
+                //socket.write(roomDetails(currentRoom));
+            } else {
+                socket.write(response);
+            }
+            
+            if (app.won || app.lost) {
+                socket.end();
+                //socket.destroy()
+                app.reset();
+            };
         }
-        
-        if (app.won) {
-            socket.write("CONGRATULATIONS, YOU'VE WON!");
-            socket.end();
-        };
     });
-   
-   //close the connection
-   //socket.end();
-
+  
 });
 
 //when we start "listening" for connections
