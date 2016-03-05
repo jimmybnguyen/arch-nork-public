@@ -5,6 +5,7 @@ var world = require('../../common/world');
 var net = require('net');
 var server = net.createServer();
 var app = require('../lib/app.js');
+var host = require('../../common/host.js');
 
 
 /////////////////////////////
@@ -15,8 +16,6 @@ server.on('connection', function(socket) {
    //send a message to the socket
     socket.write("Welcome to NORK! \nYour commands are GO, TAKE, USE, and INVENTORY. You can exit the game at any time by typing EXIT. \n \n");
     socket.write(app.roomDetails() + "");
-    
-    
     
     socket.on('data', function(data) {
         console.log(data + "");
@@ -33,7 +32,6 @@ server.on('connection', function(socket) {
                 } else {
                     socket.write("I'm sorry, I didn't understand that command.");
                 }
-                //socket.write(roomDetails(currentRoom));
             } else {
                 socket.write(response);
             }
@@ -41,7 +39,7 @@ server.on('connection', function(socket) {
             if (app.won || app.lost) {
                 socket.end();
                 //socket.destroy()
-                app.reset();
+                //app.reset();
             };
         }
     });
@@ -57,6 +55,6 @@ server.on('listening', function() {
    console.log('server listening on port %d', addr.port);
 });
 
-server.listen(8000); //listen on port 8000
+server.listen(host.PORT); //listen on port 8000
 
 

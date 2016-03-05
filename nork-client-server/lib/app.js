@@ -23,14 +23,14 @@ module.exports = {
     return processAns(data);
   }, roomDetails: function() {
       return roomDetails();
-  }, reset: function() {
+  }/*, reset: function() {
       reset();
-  }
+  }*/
 };
 
 module.exports.won = false;// prints the room details of the current room
 module.exports.lost = false;
-
+/*
 // resets the game
 function reset() {
     currentRoom = 0; // room the player is in
@@ -38,7 +38,7 @@ function reset() {
     module.exports.won = false;
     module.exports.lost = false;
     world = require('../../common/world.json');
-}
+}*/
 
 // including its name, description, and attached rooms
 function roomDetails() {
@@ -58,18 +58,6 @@ var formatRooms = function(roomIndex) {
     }
     return rooms;
 }
-
-
-'use strict';
-
-// also allows program to read input from the user
-var readline = require('readline');
-
-var io = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout 
-});
-
 
 /////////////////////////////
 ////////// ROOMS ////////////
@@ -173,8 +161,6 @@ var go = function(direction) {
     return response;
 }
 
-// TEST THIS
-//////////////////////////////////
 // takes an item of the given name from the environment 
 // but only if that item is in that room
 // and adds it to the inventory
@@ -229,22 +215,20 @@ var use = function(itemName) {
             if(itemObject) {
                 // if the item has an effect
                 if (itemObject.effect) {
-                    // only do the action if the item hasn't been used
-                    if (!itemObject.effect.consumed) {
-                        // use the item
-                        itemObject.effect.consumed = true;
-                        
+                    // only remove from the inventory
+                    // if the item can be consumed
+                    if (itemObject.effect.consumed) {              
                         // remove from your inventory
                         var index = inventory.indexOf(itemName);
                         if (index > -1) {
                             inventory.splice(index, 1);
                         }
-                        response = itemObject.description + '\n';
-                        
-                        // update the current room to where the item
-                        response += enterRoom(itemObject.effect.goto);
-                        // output the item's effect
                     }  
+                    response = itemObject.description + '\n';
+                        
+                    // update the current room to where the item
+                    response += enterRoom(itemObject.effect.goto);
+                    // output the item's effect 
                 } else {
                     response = "That object doesn't do anything";
                 }
@@ -279,19 +263,9 @@ var showInventory = function() {
     return response;
 }
 
-///////////////////////////////////////////////
-////////////// CODE GOOD UP TILL HERE /////////
-///////////////////////////////////////////////
-// world.rooms[currentRoom].description + '\n')
-
 /////////////////////////////
 /////// COMMUNICATION ///////
 /////////////////////////////
-
-// asks the question
-var askQuestion = function() {
-    io.question("What next?" + '\n', processAns);
-}
 
 // processes the answer given to the input for
 // command terms, and sends them to the correct 

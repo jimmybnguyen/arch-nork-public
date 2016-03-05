@@ -2,15 +2,12 @@
 
 var net = require('net');
 var readline = require('readline');
+var host = require('../../common/host.js');
 
 let io = readline.createInterface({
     input: process.stdin,
     output: process.stdout 
 });
-
-var HOST = '127.0.0.1'; //localhost
-var PORT = 8000;
-//connect to the server
 
 //make the client
 var client = new net.Socket();
@@ -32,7 +29,7 @@ client.on('close', function() { //when connection closed
    client.end();
 });
 
-client.connect(PORT, HOST, function() {
-   console.log('Connected to: ' + HOST + ':' + PORT);
+client.connect(host.PORT, host.HOST, function() {
+   console.log('Connected to: ' + host.HOST + ':' + host.PORT);
 });
 
