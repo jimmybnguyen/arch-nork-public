@@ -2,7 +2,7 @@
 
 var world = require('../../common/world');
 
-var currentRoom = 0; 
+var currentRoom = 0; //the location of the room in the world
 var inventory = [];
 var gameOver = false;
 

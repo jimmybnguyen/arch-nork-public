@@ -2,14 +2,13 @@
 
 var stream = require('stream');
 var app = require('./lib/app.js');
-var inputFilter = require('./filters/inputFilter.js');
 
 /**
 * Processes the user's input 
 */
 var inputFilter = new stream.Transform({
   transform (chunk, encoding, done) { 
-      var answer = chunk.toString().toUpperCase().trim();
+      var answer = chunk.toString().toUpperCase().trim(); //the input
       this.push(answer); //pipe out data
       done(); //callback for when finished
   },
@@ -73,7 +72,6 @@ var outputFilter = new stream.Transform({
         done();
       }
 });
-
 
 app.start();
 process.stdin.pipe(inputFilter)

@@ -24,7 +24,7 @@ The below questions should be answered (in detail!) regarding your submission!
 
 
 ##### 4. Approximately how many hours did it take you to complete this assignment? #####
-> Jimmy: It took me about 10-13 hours to implement the pipe-and-filter architecture for this game.
+> Jimmy: It took me about 15 hours to implement the pipe-and-filter architecture for this game.
 
 
 
